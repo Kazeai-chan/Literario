@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
   try {
     // Reenviar la petición al webhook de n8n
-    const respuesta = await fetch("https://vale8chan.app.n8n.cloud/webhook/pdf-agente", {
+    const respuesta = await fetch("https://vale8chan.app.n8n.cloud/webhook-test/pdf-agente", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
