@@ -3,49 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Consulta al Agente PDF</title>
+  <title>Agente Literario</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    label, select, input, button {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    button {
+      padding: 0.5rem;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #respuesta {
+      margin-top: 2rem;
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Consulta al Agente PDF</h1>
+  <h1>Agente Literario</h1>
   <form id="consulta-form">
-    <label for="frase">Escribe tu frase:</label><br/>
-    <input type="text" id="frase" name="frase" required /><br/><br/>
+    <label for="frase">Escribe una frase:</label>
+    <input type="text" id="frase" name="frase" required />
 
-    <label for="opcion">Selecciona una opción:</label><br/>
+    <label for="opcion">Selecciona una opción:</label>
     <select id="opcion" name="opcion">
-        <option value="resumen">Resumen</option>
-        <option value="respuesta">Responder pregunta</option>
-    </select><br/><br/>
+      <option value="resumen">Resumen</option>
+      <option value="respuesta">Responder pregunta</option>
+    </select>
 
     <button type="submit">Enviar</button>
   </form>
 
-  <h2>Respuesta:</h2>
   <div id="respuesta"></div>
 
   <script>
-    document.getElementById("consulta-form")
-    .addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const frase  = document.getElementById("frase").value;
-        const opcion = document.getElementById("opcion").value;
+    document.getElementById("consulta-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const frase = document.getElementById("frase").value;
+      const opcion = document.getElementById("opcion").value;
 
-        // convierte a url‑encoded
-        const body = new URLSearchParams({ frase, opcion });
+      const body = new URLSearchParams({ frase, opcion });
 
-        try {
-        const res  = await fetch("https://vale8chan.app.n8n.cloud/webhook/pdf-agente", {
-            method: "POST",
-            body   : body      // <-- sin header Content-Type
+      try {
+        const response = await fetch("/api/enviar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: body
         });
 
-        const data = await res.json();
-        document.getElementById("respuesta").innerText = data.respuesta || "Sin respuesta";
-        } catch (err) {
-        document.getElementById("respuesta").innerText = "Error de conexión con n8n";
-        }
+        const data = await response.json();
+        document.getElementById("respuesta").innerText = data.respuesta || "No se recibió respuesta";
+      } catch (error) {
+        document.getElementById("respuesta").innerText = "Error al contactar con el agente.";
+      }
     });
-</script>
-
+  </script>
 </body>
 </html>
+
