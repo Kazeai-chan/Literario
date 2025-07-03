@@ -29,7 +29,7 @@
         const frase = document.getElementById("frase").value;
         const opcion = document.getElementById("opcion").value;
 
-        const response = await fetch("https://tu-n8n-url/webhook", {
+        const response = await fetch("https://vale8chan.app.n8n.cloud/webhook/pdf-agente", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ frase, opcion })
