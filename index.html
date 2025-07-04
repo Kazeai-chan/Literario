@@ -1,33 +1,153 @@
-<!DOCTYPE html>
+
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Agente Literario</title>
+  <!-- Enlace a Google Fonts para una tipografía más moderna -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
+    /* Definición de variables CSS para colores y sombras */
+    :root {
+      /* Nueva paleta de colores pasteles */
+      --primary-color: #cb7ca2; /* Rosa/Púrpura pastel */
+      --primary-dark: #B96B90; /* Un tono más oscuro del primario para hover */
+      --secondary-color: #ed9da1; /* Rosa/Melocotón pastel */
+      --text-color: #4A4A4A; /* Gris oscuro suave para el texto */
+      --bg-light: #fef9f6; /* Fondo muy claro, casi blanco cremoso */
+      --bg-dark: #c9e5af; /* Verde claro pastel para la respuesta */
+      --border-color: #dceeb1; /* Verde amarillento pastel para bordes */
+      --shadow-color: rgba(0, 0, 0, 0.05); /* Sombra aún más suave */
+      --font-family: 'Inter', sans-serif; /* Fuente principal */
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
+      font-family: var(--font-family);
+      max-width: 700px;
       margin: 2rem auto;
-      padding: 1rem;
+      padding: 1.5rem;
+      background-color: var(--bg-light);
+      color: var(--text-color);
+      line-height: 1.6;
+      box-shadow: 0 4px 15px var(--shadow-color); /* Sombra suave para el cuerpo */
+      border-radius: 10px; /* Bordes redondeados */
+      box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
     }
-    label, select, input, button {
+
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    form {
+      background-color: #fff; /* Fondo blanco para el formulario */
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px var(--shadow-color); /* Sombra para el formulario */
+    }
+
+    label {
       display: block;
-      width: 100%;
-      margin-top: 1rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600; /* Texto de etiqueta más fuerte */
+      color: var(--text-color);
     }
-    button {
-      padding: 0.5rem;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    #respuesta {
-      margin-top: 2rem;
-      background: #f0f0f0;
-      padding: 1rem;
+
+    input[type="text"],
+    select {
+      display: block;
+      width: 100%; /* Ocupa el 100% del ancho disponible */
+      padding: 12px;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border-color);
       border-radius: 5px;
+      font-size: 1rem;
+      box-sizing: border-box; /* Incluye padding y borde en el ancho */
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      border-color: var(--secondary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(237, 157, 161, 0.4); /* Sombra de enfoque con color pastel secundario */
+    }
+
+    button {
+      padding: 12px 20px;
+      background: var(--primary-color);
+      color: white; /* El texto del botón puede seguir siendo blanco para contraste */
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 700;
+      width: 100%;
+      margin-top: 1.5rem;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra para el botón */
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px); /* Efecto de elevación al pasar el ratón */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0); /* Vuelve a su posición original al hacer clic */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    #respuesta {
+      margin-top: 2.5rem;
+      background: var(--bg-dark);
+      padding: 1.5rem;
+      border-radius: 8px;
+      min-height: 80px; /* Altura mínima para la respuesta */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-color);
+      font-size: 1.1rem;
+      text-align: center;
+      box-shadow: inset 0 1px 3px var(--shadow-color); /* Sombra interna para la caja de respuesta */
+      word-wrap: break-word; /* Rompe palabras largas */
+      white-space: pre-wrap; /* Preserva espacios en blanco y saltos de línea */
+    }
+
+    /* Estilos para el spinner de carga */
+    .loader {
+      border: 5px solid #f3f3f3; /* Gris claro para el borde exterior */
+      border-top: 5px solid var(--secondary-color); /* Azul pastel para el borde giratorio */
+      border-radius: 50%; /* Hace que sea un círculo */
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite; /* Animación de giro */
+      display: none; /* Oculto por defecto */
+    }
+
+    /* Keyframes para la animación de giro */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Media queries para responsividad */
+    @media (max-width: 768px) {
+      body {
+        margin: 1rem auto;
+        padding: 1rem;
+      }
+      form {
+        padding: 1.5rem;
+      }
     }
   </style>
 </head>
@@ -35,43 +155,72 @@
   <h1>Agente Literario</h1>
   <form id="consulta-form">
     <label for="frase">Escribe una frase:</label>
-    <input type="text" id="frase" name="frase" required />
+    <input type="text" id="frase" name="frase" required placeholder="Ej: El sol brillaba con fuerza..." />
 
     <label for="opcion">Selecciona el estilo literario que desea usar:</label>
     <select id="opcion" name="opcion">
-      <option value="alicia">Alicia en el Pais de las Maravillas</option>
-      <option value="martin">Martin Rivas</option>
+      <option value="alicia">Alicia en el País de las Maravillas</option>
+      <option value="martin">Martín Rivas</option>
+      <option value="quijote">Don Quijote de la Mancha</option>
     </select>
 
     <button type="submit">Enviar</button>
   </form>
 
-  <div id="respuesta"></div>
+  <div id="respuesta">
+    <!-- El spinner de carga se insertará aquí dinámicamente o se mostrará/ocultará -->
+    <div class="loader" id="loader"></div>
+    <span id="respuesta-texto">Aquí aparecerá la respuesta del agente.</span>
+  </div>
 
   <script>
-    document.getElementById("consulta-form").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const frase = document.getElementById("frase").value;
-      const opcion = document.getElementById("opcion").value;
+    document.addEventListener("DOMContentLoaded", function() {
+      const form = document.getElementById("consulta-form");
+      const fraseInput = document.getElementById("frase");
+      const opcionSelect = document.getElementById("opcion");
+      const respuestaDiv = document.getElementById("respuesta");
+      const respuestaTextoSpan = document.getElementById("respuesta-texto");
+      const loader = document.getElementById("loader");
 
-      const body = new URLSearchParams({ frase, opcion });
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Previene el envío del formulario por defecto
 
-      try {
-        const response = await fetch("/api/enviar", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: body
-        });
+        // Muestra el loader y limpia el texto de respuesta anterior
+        respuestaTextoSpan.style.display = 'none'; // Oculta el texto
+        loader.style.display = 'block'; // Muestra el spinner
+        respuestaDiv.style.justifyContent = 'center'; // Centra el spinner
 
-        const data = await response.json();
-        document.getElementById("respuesta").innerText = data.respuesta || "No se recibió respuesta";
-      } catch (error) {
-        document.getElementById("respuesta").innerText = "Error al contactar con el agente.";
-      }
+        const frase = fraseInput.value;
+        const opcion = opcionSelect.value;
+
+        const body = new URLSearchParams({ frase, opcion });
+
+        try {
+          // Simulación de una llamada a API (reemplaza con tu fetch real)
+          const response = await fetch("/api/enviar", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: body
+          });
+          const data = await response.json();
+
+
+          respuestaTextoSpan.innerText = data.respuesta || "No se recibió respuesta";
+        } catch (error) {
+          console.error("Error al contactar con el agente:", error);
+          respuestaTextoSpan.innerText = "Error al contactar con el agente. Inténtalo de nuevo.";
+        } finally {
+          // Oculta el loader y muestra el texto de respuesta
+          loader.style.display = 'none';
+          respuestaTextoSpan.style.display = 'block';
+          respuestaDiv.style.justifyContent = 'flex-start'; // Vuelve a la alineación normal del texto
+        }
+      });
     });
   </script>
 </body>
 </html>
+
 
