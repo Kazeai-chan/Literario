@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -112,7 +112,8 @@
       border-radius: 8px;
       min-height: 80px; /* Altura mínima para la respuesta */
       display: flex;
-      align-items: center;
+      flex-direction: column; /* Cambiado a columna para apilar texto e imagen */
+      align-items: center; /* Centra los elementos horizontalmente */
       justify-content: center;
       color: var(--text-color);
       font-size: 1.1rem;
@@ -120,6 +121,14 @@
       box-shadow: inset 0 1px 3px var(--shadow-color); /* Sombra interna para la caja de respuesta */
       word-wrap: break-word; /* Rompe palabras largas */
       white-space: pre-wrap; /* Preserva espacios en blanco y saltos de línea */
+    }
+
+    #respuesta img {
+      max-width: 150px; /* Tamaño máximo para las imágenes */
+      height: auto;
+      margin-top: 1rem; /* Espacio entre el texto y la imagen */
+      border-radius: 8px; /* Bordes redondeados para las imágenes */
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra para las imágenes */
     }
 
     /* Estilos para el spinner de carga */
@@ -171,6 +180,7 @@
     <!-- El spinner de carga se insertará aquí dinámicamente o se mostrará/ocultará -->
     <div class="loader" id="loader"></div>
     <span id="respuesta-texto">Aquí aparecerá la respuesta del agente.</span>
+    <!-- La imagen se insertará aquí dinámicamente -->
   </div>
 
   <script>
@@ -182,13 +192,27 @@
       const respuestaTextoSpan = document.getElementById("respuesta-texto");
       const loader = document.getElementById("loader");
 
+      // URLs de las imágenes
+      const imageUrls = {
+        alicia: "https://static.wikia.nocookie.net/heroe/images/2/22/Alicia_Disney_render.png/revision/latest/scale-to-width-down/1200?cb=20230910003305&path-prefix=es",
+        quijote: "https://img.freepik.com/vector-gratis/ilustracion-don-quijote-diseno-plano_23-2149916471.jpg?semt=ais_hybrid&w=740",
+        martin: "https://ebooks.edisur.cl/wp-content/uploads/2023/10/cover-2.jpg"
+      };
+
       form.addEventListener("submit", async function (e) {
         e.preventDefault(); // Previene el envío del formulario por defecto
+
+        // Limpia cualquier imagen anterior
+        const existingImage = respuestaDiv.querySelector('img');
+        if (existingImage) {
+          respuestaDiv.removeChild(existingImage);
+        }
 
         // Muestra el loader y limpia el texto de respuesta anterior
         respuestaTextoSpan.style.display = 'none'; // Oculta el texto
         loader.style.display = 'block'; // Muestra el spinner
         respuestaDiv.style.justifyContent = 'center'; // Centra el spinner
+        respuestaDiv.style.flexDirection = 'column'; // Asegura que el loader esté centrado verticalmente
 
         const frase = fraseInput.value;
         const opcion = opcionSelect.value;
@@ -196,7 +220,6 @@
         const body = new URLSearchParams({ frase, opcion });
 
         try {
-          // Simulación de una llamada a API (reemplaza con tu fetch real)
           const response = await fetch("/api/enviar", {
             method: "POST",
             headers: {
@@ -206,8 +229,18 @@
           });
           const data = await response.json();
 
-
           respuestaTextoSpan.innerText = data.respuesta || "No se recibió respuesta";
+
+          // Muestra la imagen correspondiente
+          const img = document.createElement('img');
+          img.src = imageUrls[opcion];
+          img.alt = `Imagen de ${opcion}`;
+          img.onerror = function() {
+            this.src = `https://placehold.co/150x150/cccccc/333333?text=Imagen+no+disponible`; // Fallback image
+            this.alt = `Imagen no disponible para ${opcion}`;
+          };
+          respuestaDiv.appendChild(img);
+
         } catch (error) {
           console.error("Error al contactar con el agente:", error);
           respuestaTextoSpan.innerText = "Error al contactar con el agente. Inténtalo de nuevo.";
@@ -216,11 +249,10 @@
           loader.style.display = 'none';
           respuestaTextoSpan.style.display = 'block';
           respuestaDiv.style.justifyContent = 'flex-start'; // Vuelve a la alineación normal del texto
+          respuestaDiv.style.flexDirection = 'column'; // Asegura que texto e imagen se apilen
         }
       });
     });
   </script>
 </body>
 </html>
-
-
